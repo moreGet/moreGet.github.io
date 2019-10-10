@@ -22,6 +22,13 @@ author: thiagorossener
 
 ## TCP/UDP 연결 방식 및 특징
 
+| 값 | 의미 | 기본값 |
+|---|:---:|---:|
+| `static` | 유형(기준) 없음 / 배치 불가능 | `static` |
+| `relative` | 요소 자신을 기준으로 배치 |  |
+| `absolute` | 위치 상 부모(조상)요소를 기준으로 배치 |  |
+| `fixed` | 브라우저 창을 기준으로 배치 |  |
+
 <table>
   <thead>
     <tr>
@@ -32,19 +39,19 @@ author: thiagorossener
   </thead>
   <tbody>
     <tr>
-      <td>연결방식</td>
+      <td><center>연결방식</td>
       <td>연결형 프로토콜<br>연결 후 통신<br>1:1 통신방식</td>
       <td>비연결형 프로토콜<br>연결 없이 통신<br>1:1, 1:N, N:N 통신 방식</td>
     </tr>
     <tr>
-      <td>특징</td>
+      <td><center>특징</td>
       <td>데이터 경계 구분안함<br>신뢰성 있는 데이터 전송<br>데이터 전송 순서 보장<br>데이터의 수신 여부 확인<br>패킷을 관리할 필요가 없음<br>UDP보다 느림</td>
       <td>데이터의 경계를 구분함<br>신뢰성 없는 데이터 전송<br>데이터의 전송 순서가 바뀔 수 있음<br> 데이터의 수신 여부를 확인 안함<br>패킷을 관리해야함<br>TCP보다 전송속도가 빠름</td>
     </tr>
     <tr>
-      <td>관련클래스</td>
-      <td>Socket<br>ServerSocket</td>
-      <td>DatagramSocket<br>DatagramPacket<br>MulticastSocket</td>
+      <td><center>관련클래스</td>
+      <td><code>Socket<br>ServerSocket</td>
+      <td><code>DatagramSocket<br>DatagramPacket<br>MulticastSocket</td>
     </tr>
   </tbody>
 </table>
