@@ -16,18 +16,9 @@ author: thiagorossener
 
 # JAVA IO(TCP) Client 구현
 > Package import java.net.Socket<br>
-> TCP방식을 이용한 간단한 클라이언트 구현<br>
 > TCP(Transmission Control Protocol)<br>
-> 연결형 서비스를 지원하는 전송계층 프로토콜<br>
-> 인터넷 환경에서 기본으로 사용한다.<br>
-> 호스트간 신뢰성 있는 데이터 전달과 흐름제어 및 혼잡제어 등을 제공하는 전송계층<br>
-> 가상 회선 연결 방식, 연결형 서비스를 제공<br>
-> 높은 신뢰성(Sequence Number, Ack Number를 통한 신뢰성 보장)<br>
-> 연결의 설정(3-way handshaking)과 해제(4-way handshaking)<br>
-> 데이터 흐름 제어(수신자 버퍼 오버플로우 방지) 및 혼잡 제어<br>(네트워크 내 패킷 수가 과도하게 증가하는 현상 방지)<br>
-> 전이중(Full-Duplex), 점대점(Point to Point) 서비스 소켓 통신 과정<br>
-> 서버 : 소켓을 생성, 주소 할당, 연결 요청 기다림, 요청에 대한 응답<br>
-> 클라이언트 : 소켓을 생성, 주소 할당, 연결 요청<br>
+> TCP방식을 이용한 간단한 클라이언트 구현<br>
+
 
 ## TCP/UDP 연결 방식 및 특징
 |  | TCP | UDP |
