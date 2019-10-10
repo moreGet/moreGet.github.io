@@ -4,12 +4,12 @@ layout: post
 title: JAVA_UUID 사용하기
 subtitle: 자바 UUID 사용 튜토리얼
 description: "Current JRE : >= JDK 1.5"
-image: https://res.cloudinary.com/dm7h7e8xj/image/upload/v1559825145/theme16_o0seet.jpg
-optimized_image: https://res.cloudinary.com/dm7h7e8xj/image/upload/c_scale,w_380/v1559825145/theme16_o0seet.jpg
+image: https://res.cloudinary.com/dm7h7e8xj/image/upload/c_scale,w_760/v1506079212/jekflix-capa_vfhuzh.png
+optimized_image: https://res.cloudinary.com/dm7h7e8xj/image/upload/c_scale,w_380/v1506079212/jekflix-capa_vfhuzh.png
 category: coding
 tags:
   - java
-author: ch.Get
+author: thiagorossener
 # image:760*400
 # optimized_image:380*200
 ---
