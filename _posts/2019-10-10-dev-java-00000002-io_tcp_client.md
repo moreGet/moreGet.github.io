@@ -27,7 +27,7 @@ author: thiagorossener
 | 관련클래스 | Socket<br>ServerSocket | DatagramSocket<br>DatagramPacket<br>MulticastSocket | -->
 
 |   | TCP | UDP |
-|---|:---:|---:|
+|:---:|:---:|:---:|
 | 연결방식 | 연결형 프로토콜<br>연결 후 통신<br>1:1 통신방식 | 비연결형 프로토콜<br>연결 없이 통신<br>1:1, 1:N, N:N 통신 방식 |
 | `relative` | 요소 자신을 기준으로 배치 ||
 | `absolute` | 위치 상 부모(조상)요소를 기준으로 배치 ||
