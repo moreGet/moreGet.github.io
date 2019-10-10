@@ -21,11 +21,33 @@ author: thiagorossener
 
 
 ## TCP/UDP 연결 방식 및 특징
-|  | TCP | UDP |
-|:---:|:---:|:---:|
-| 연결방식 | 연결형 프로토콜<br>연결 후 통신<br>1:1 통신방식 | 비연결형 프로토콜<br>연결 없이 통신<br>1:1, 1:N, N:N 통신 방식 |
-| 특징 | 데이터 경계 구분안함<br>신뢰성 있는 데이터 전송<br>데이터 전송 순서 보장<br>데이터의 수신 여부 확인<br>패킷을 관리할 필요가 없음<br>UDP보다 느림 | 데이터의 경계를 구분함<br>신뢰성 없는 데이터 전송<br>데이터의 전송 순서가 바뀔 수 있음<br> 데이터의 수신 여부를 확인 안함<br>패킷을 관리해야함<br>TCP보다 전송속도가 빠름 |
-| 관련클래스 | Socket<br>ServerSocket | DatagramSocket<br>DatagramPacket<br>MulticastSocket |
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>TCP</th>
+      <th>UDP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>연결방식</td>
+      <td>연결형 프로토콜<br>연결 후 통신<br>1:1 통신방식</td>
+      <td>비연결형 프로토콜<br>연결 없이 통신<br>1:1, 1:N, N:N 통신 방식</td>
+    </tr>
+    <tr>
+      <td>특징</td>
+      <td>데이터 경계 구분안함<br>신뢰성 있는 데이터 전송<br>데이터 전송 순서 보장<br>데이터의 수신 여부 확인<br>패킷을 관리할 필요가 없음<br>UDP보다 느림</td>
+      <td>데이터의 경계를 구분함<br>신뢰성 없는 데이터 전송<br>데이터의 전송 순서가 바뀔 수 있음<br> 데이터의 수신 여부를 확인 안함<br>패킷을 관리해야함<br>TCP보다 전송속도가 빠름</td>
+    </tr>
+    <tr>
+      <td>관련클래스</td>
+      <td>Socket<br>ServerSocket</td>
+      <td>DatagramSocket<br>DatagramPacket<br>MulticastSocket</td>
+    </tr>
+  </tbody>
+</table>
 
 <br>
 
