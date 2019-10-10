@@ -10,6 +10,8 @@ category: coding
 tags:
   - java
 author: ch.Get
+# image:760*400
+# optimized_image:380*200
 ---
 
 # JAVA UUID (중복되지 않는 Unique Key 생성)
