@@ -1,8 +1,8 @@
 ---
 date: 2019-10-10 10:56:00
 layout: post
-title: JAVA_UUID 사용하기
-subtitle: 자바 UUID 사용 튜토리얼
+title: JAVA_IO_TCP CLIENT 구현하기
+subtitle: JAVA_IO 사용법 및 TCP 개념
 description: "Current JRE : >= JDK 1.5"
 image: https://res.cloudinary.com/dm7h7e8xj/image/upload/v1559820489/js-code_n83m7a.jpg
 optimized_image: https://res.cloudinary.com/dm7h7e8xj/image/upload/c_scale,w_380/v1559820489/js-code_n83m7a.jpg
@@ -16,7 +16,25 @@ author: thiagorossener
 
 # JAVA IO(TCP) Client 구현
 > Package import java.net.Socket<br>
-> TCP방식을 이용한 간단한 클라이언트 구현
+> TCP방식을 이용한 간단한 클라이언트 구현<br>
+> TCP(Transmission Control Protocol)<br>
+> 연결형 서비스를 지원하는 전송계층 프로토콜<br>
+> 인터넷 환경에서 기본으로 사용한다.<br>
+> 호스트간 신뢰성 있는 데이터 전달과 흐름제어 및 혼잡제어 등을 제공하는 전송계층<br>
+> 가상 회선 연결 방식, 연결형 서비스를 제공<br>
+> 높은 신뢰성(Sequence Number, Ack Number를 통한 신뢰성 보장)<br>
+> 연결의 설정(3-way handshaking)과 해제(4-way handshaking)<br>
+> 데이터 흐름 제어(수신자 버퍼 오버플로우 방지) 및 혼잡 제어<br>(네트워크 내 패킷 수가 과도하게 증가하는 현상 방지)<br>
+> 전이중(Full-Duplex), 점대점(Point to Point) 서비스 소켓 통신 과정<br>
+> 서버 : 소켓을 생성, 주소 할당, 연결 요청 기다림, 요청에 대한 응답<br>
+> 클라이언트 : 소켓을 생성, 주소 할당, 연결 요청<br>
+
+## TCP/UDP 연결 방식 및 특징
+|  | TCP | UDP |
+|:---:|:---:|:---:|
+| 연결방식 | 연결형 프로토콜<br>연결 후 통신<br>1:1 통신방식 | 비연결형 프로토콜<br>연결 없이 통신<br>1:1, 1:N, N:N 통신 방식 |
+| 특징 | 데이터 경계 구분안함<br>신뢰성 있는 데이터 전송<br>데이터 전송 순서 보장<br>데이터의 수신 여부 확인<br>패킷을 관리할 필요가 없음<br>UDP보다 느림 | 데이터의 경계를 구분함<br>신뢰성 없는 데이터 전송<br>데이터의 전송 순서가 바뀔 수 있음<br> 데이터의 수신 여부를 확인 안함<br>패킷을 관리해야함<br>TCP보다 전송속도가 빠름 |
+| 관련클래스 | Socket<br>ServerSocket | DatagramSocket<br>DatagramPacket<br>MulticastSocket |
 
 <br>
 
