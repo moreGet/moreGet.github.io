@@ -1,15 +1,11 @@
 ---
-date: 2019-10-10 10:56:00
 layout: post
-title: JAVA_UUID 사용하기
-subtitle: 자바 UUID 사용 튜토리얼
-description: "Current JRE : >= JDK 1.5"
-image: https://res.cloudinary.com/dm7h7e8xj/image/upload/v1559825145/theme16_o0seet.jpg
-optimized_image: https://res.cloudinary.com/dm7h7e8xj/image/upload/c_scale,w_380/v1559825145/theme16_o0seet.jpg
-category: coding
-tags:
-  - java
-author: ch.Get
+title:  "Java Class UUID"
+subtitle:   "MarkDown"
+categories: devlog
+tags: java
+comments: true
+# tags: tip
 ---
 
 # JAVA UUID (중복되지 않는 Unique Key 생성)
