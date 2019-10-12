@@ -9,9 +9,6 @@ optimized_image: https://res.cloudinary.com/dm7h7e8xj/image/upload/c_scale,w_380
 category: coding
 tags:
   - java
-  - io
-  - tcp
-  - client
 author: thiagorossener
 # image:760*400
 # optimized_image:380*200
