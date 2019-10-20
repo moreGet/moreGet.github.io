@@ -1,0 +1,26 @@
+[
+	{
+		"name":"김철수",
+		"occupation":"개발자",
+		"information":
+		    {
+		    "address":"마포구 공덕동",
+		    "info":
+			{
+			    "height":180, "weight":75, "blood":"O"
+			}
+		    }
+	},
+	{
+		"name":"박영희",
+		"occupation":"은행원",
+		"information":
+		    {
+		    "address":"용산구 도원동",
+		    "info":
+			{
+			    "height":165, "weight":48, "blood":"AB"
+			}
+		    }
+	}
+]
