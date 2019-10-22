@@ -1,7 +1,7 @@
 ---
 date: 2019-10-20 20:50:00
 layout: post
-title: R-Studio OJDBC 연동하기(벌크로딩 페이지 미완성)
+title: R-Studio OJDBC 연동하기(벌크 로딩)
 subtitle: R-Studio 데이터베이스를 제어하기 위한 OJDBC연동
 description: "Current RStudio : == Desktop 1.2.5001(64bit)"
 image: https://res.cloudinary.com/dm7h7e8xj/image/upload/v1559820489/js-code_n83m7a.jpg
@@ -159,4 +159,77 @@ barplot(main = "나라별 3년동안 테러 건수", height = t(as.matrix(val)),
 
 axis(side=2, at=seq(0, max(val)+1000, 500), las=1)
 legend(x = "topright", legend = leX, fill = rainbow(length(leX)), bty = 'o', horiz = T, cex = 0.9)
+```
+
+```sql
+########################### 벌크로딩 하기.
+-- # 벌크 로딩( csv --> table )
+-- # 벌크(bulk)란 many, large등의 의미를 담고 있는 단어로써, 많은 량의 데이터를 의미한다.
+
+-- # 엑셀 형식(csv)의 파일을 데이터 베이스에 추가하는 예시이다.
+-- # sqlldr이라는 오라클 유틸리티를 이용하도록 한다.
+
+-- #         테이블 생성시       컨트롤 파일
+-- # 숫자     number           integer external
+-- # 날짜     date              date
+-- # 테이블 생성 문장
+-- # sql developer 툴을 사용하여 다음과 같이 테이블을 생성하도록 한다.
+drop table mytable ;
+create table mytable(    
+    name varchar2(50),
+    age number,
+    regdate date
+); 
+
+-- # 컨트롤 파일 만들기
+-- # 메모장을 이용하여 다음 파일을 작성하도록 한다.
+-- # 파일 이름 : mycontrol.ctl
+-- # 데이터 타입에 상관 없이 모두 char 형으로 처리하면 된다.
+load data
+infile 'mycsv.csv'
+insert into table mytable
+fields terminated by ','
+trailing nullcols(
+    name, age, regdate
+)
+
+
+-- # csv 파일 내용
+-- # 메모장을 이용하여 다음과 같이 엑셀 파일을 작성하도록 한다.
+-- # 만일 한글이 깨지는 경우에는 인코딩 방식은 ansi로 설정해 보도록 한다.
+-- # 파일 이름 : mycsv.csv
+name,age,regdate
+김철수,30,2018/05/08
+박영희,40,2018/12/25
+홍길동,50,2018/01/01
+
+-- # 커맨드 창
+-- # cmd를 이용하여 커맨드 창으로 이동한다.
+-- # 위에서 작성한 파일들이 모두 c:\temp 폴더에 있다고 가정한다.
+-- # 오라클 설치 버전이 10g 또는 11g 버전이다.
+
+cd c:\temp
+C:\oraclexe\app\oracle\product\11.2.0\server\bin\sqlldr.exe userid=gomdori/oracle control=mycontrol.ctl
+
+-- # R 실습
+-- # 위에서 만든 테이블을 R을 이용하여 읽어 들이는 코드를 작성하시오.
+
+-- # 파일 이름 : get_mytable.R
+
+#######################################################################
+
+-- # 추가 실습
+-- # sqlldr 유틸리티와 첨부된 파일(myterror.csv)을 이용하여 bulk loading을 수행해 보세요.
+-- # 단, 컨트롤 파일과 myterror table은 직접 생성하도록 한다.
+
+-- # myterror 테이블을 생성하되, 다음 컬럼들은 모두 숫자 형식으로 만든다.
+-- # eventid / iyear / imonth / iday / country / region /  latitude / longitude
+ 
+-- # 컨트롤 파일에서는 myterror 테이블의 컬럼 이름만 동일하게 지정하고,
+-- # 데이터 타입은 명시하지 않도록 한다.
+
+-- # R 실습
+-- # 위에서 만든 테이블을 R을 이용하여 읽어 들이는 코드를 작성하시오.
+
+-- # 파일 이름 : get_myterror.R
 ```
