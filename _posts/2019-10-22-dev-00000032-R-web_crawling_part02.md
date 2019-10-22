@@ -1,7 +1,7 @@
 ---
 date: 2019-10-22 23:10:00
 layout: post
-title: R-Studio Web Crawling 하여 WordCloud2 그리기 Part.1
+title: R-Studio Web Crawling 하여 WordCloud2 그리기 Part.2
 subtitle: R-Studio의 WebCrawling을 이용한 시각화.
 description: "Current RStudio : == Desktop 1.2.5001(64bit)"
 image: https://res.cloudinary.com/dm7h7e8xj/image/upload/v1559820489/js-code_n83m7a.jpg
