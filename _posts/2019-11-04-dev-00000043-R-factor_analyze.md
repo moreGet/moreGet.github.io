@@ -1,7 +1,7 @@
 ---
 date: 2019-11-04 22:10:00
 layout: post
-title: R-Studio 주성분 분석 수행을 통한 데이터 상관 관계 분석 Part.1
+title: R-Studio 주성분 분석 수행을 통한 데이터 상관 관계 분석
 subtitle: R-Studio의 상관관계 분석 을 위한 procomp, eigen, factanal 함수 사용
 description: "Current RStudio : == Desktop 1.2.5001(64bit)"
 image: ../assets/img/postsimg/R_main_00000003.png
