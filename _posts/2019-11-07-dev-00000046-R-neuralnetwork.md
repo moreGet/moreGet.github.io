@@ -1,8 +1,8 @@
 ---
 date: 2019-11-07 22:00:00
 layout: post
-title: R-Studio 인공신경망 이용 하기.
-subtitle: R-Studio의 인공신경망 함수 ctree, 인공신경망
+title: R-Studio 인공신경망 을 이용해 데이터분석 하기.
+subtitle: R-Studio의 이항차트(ctree), 인공신경망(neuralnet)
 description: "Current RStudio : == Desktop 1.2.5001(64bit)"
 image: ../assets/img/postsimg/R_main_00000003.png
 optimized_image: ../assets/img/postsimg/R_op_00000003.png
@@ -14,14 +14,14 @@ author: thiagorossener
 # optimized_image:380*200
 ---
 
-<!-- ## 파일 소스
+## 파일 소스
 우클릭 -> 다른이름으로 링크저장 이용해 주세요<br>
-<a href="../assets/sources/custom_info.csv" class="btn btn-lg btn-outline">
-custom_info.csv
+<a href="../assets/sources/S20191108.zip" class="btn btn-lg btn-outline">
+S20191108.zip
 </a>
 <br>
 <br>
-<br> -->
+<br>
 
 ## 소스 코드
 ```r
