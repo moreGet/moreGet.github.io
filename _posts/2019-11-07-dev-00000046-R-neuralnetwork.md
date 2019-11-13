@@ -56,9 +56,10 @@ model
 #   9)*  weights = 26 
 
 plot(model)
+```
 
-#################################################################
-
+## 소스 코드 2
+```r
 mush <- read.csv('통계_분석_src_02/27.의사 결정 트리01/mushrooms.csv', header = T)
 head(mush)
 dim(mush)
@@ -134,9 +135,10 @@ pred <- predict(model, some, type = 'class')
 pred
 # input data를 attributes라고 한다 머신러닝에서
 # 정답값을 가지고 있는 컬럼(데이터)를 class라고 한다.
+```
 
-#############################################################
-
+## 소스 코드 3
+```r
 library(devtools)
 library(nnet)
 
@@ -245,8 +247,10 @@ testing$tot_price # 정답(labels)
 # 
 # accuracy <- enu / deno
 # round(100 * accuracy, 3)
+```
 
-################################################################################
+## 소스 코드 4
+```r
 
 # install.packages('neuralnet')
 library(neuralnet)
