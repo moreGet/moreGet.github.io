@@ -1,7 +1,7 @@
 ---
 date: 2020-01-03 22:00:00
 layout: post
-title: Java TreeSet을 이용한 정렬
+title: Java TreeSet을 이용한 정렬(Comparable 구현)
 subtitle: java.util.TreeSet 패키지 이용
 description: "Current JDK : == JDK 1.8.0_231(64bit)"
 image: ../assets/img/postsimg/R_main_00000003.png
