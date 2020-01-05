@@ -66,6 +66,7 @@ author: thiagorossener
 | Annotation   | getAnnotation(Class<T> annotationClass)<br>지정한 어노테이션이 적용되어 있으면 어노테이션을 리턴하고 그렇지 않다면 null을 리턴한다. 상위클래스 적용시에도 리턴 |
 | Annotation[] | getAnnotations()<br>적용된 모든 어노테이션 리턴, 상위클래스 적용된 어노테이션도 모두 리턴 없으면 0인 배열 리턴                                                 |
 | Annotation[] | getDeclaredAnnotations()<br>직접 적용된 모든 어노테이션을 리턴. 상위클래스 어노테이션 포함안함                                                                 |
+
 <br>
 
 ## import Package
