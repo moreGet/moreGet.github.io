@@ -68,102 +68,82 @@ author: thiagorossener
 | Annotation[] | getDeclaredAnnotations()<br>직접 적용된 모든 어노테이션을 리턴. 상위클래스 어노테이션 포함안함                                                                 |
 <br>
 
-```java
-// 예시 구현
-public class AbstractExam {
-	// 필드
-	private String owner;
-	
-	// 생성자
-	publlic AbstractExam(String owner) {
-		this.owner = owner;
-	}
-
-	// 메소드
-	public String getOwner() {
-		return owner;
-	}
-
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-}
-
-// 상속 받을때
-public class AbstractV2Exam extends AbstractExam{
-
-	// 내용 ...
-}
-```
-
-## 추상 Class
-- new 예약어를 사용하지 못한다<br>
-- 생성자가 반드시 존재 해야한다<br>
-- 말그대로 추상적인 클래스이다. 실체 클래스를 만들기 위해 부모 클래스로만 사용된다.<br>
-- 실제로 구현될 클래스들의 공통된 필드와 메소드의 이름을 통일할 목적으로 사용<br>
-- 실체 클래스를 작성할 때 시간을 절약한다.
+## import Package
+> import java.lang.reflect.Method; <br>
 
 ```java
-// 예시 구현
-public abstract class AbstractExam {
-	// 필드
-	private String owner;
-	
-	// 생성자(반드시 존재 하여아함)
-	public AbstractExam(String owner) {
-		this.owner = owner;
-	}
+public class AnnotationExam {
 
-	// 메소드
-	public String getOwner() {
-		return owner;
-	}
-
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-}
-
-// 상속 받을때
-public class AbstractV2Exam extends AbstractExam{
-
-	// 내용 ...
-}
-```
-
-## 구현 implements
-- 상속을 받는다는 것은 일반 상속이랑 다를것이 없지만 인터페이스 class를 상속받는다.<br>
-- 인터페이스 class는 정의한 메소드를 구현하지 않아도 된다.<br>
-- 다중상속을 허용하지 않는 JAVA에서의 대비책이다.<br>
-- 개발 코드와 객체가 서로 통신하는 접점 역할을 한다.
-- 개발 코드를 수정하지 않고 사용하는 개체를 변경할 수 있도록 하기 위해 사용한다.
-- 객체에 따라 내용과 리턴값이 달라진다.
-
-```java
-// 예시 구현
-public interface AbstractExam {
-	// 상수
-	// 변수 는 생성 불가, 상수만 가능.
-	// 타입 상수명 = 값;
-	public int TEST_VALUE = 10;
-	public String TEST_STR_VALUE = "TEST";
-	
-	// 추상 메소드 {}가 없다면 하위 클래스에서 반드시 구현해야함
-	public int getValue();
-	public void setValue(int value);
-
-	// 디폴트 메소드
-	default void chkStrValue(String strTemp) {
-		if(strTemp.equals("TEST")) {
-			System.out.println("TEST 입니다.");
-		} else {
-			System.out.println("TEST 아닙니다.");
+	// *** invoke(적용 하다.)
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		//Service 클래스로부터 메소드 정보를 얻음
+		Method[] declaredMethods = Service.class.getDeclaredMethods();
+		
+		//Method 객체를 하나씩 처리
+		for (Method method : declaredMethods) {
+			//PrintAnnotation이 적용되었는지 확인
+			if(method.isAnnotationPresent(PrintAnnotation.class)) {
+				
+				//PrintAnnotation 객체 얻기
+				PrintAnnotation printAnnotation = method.getAnnotation(PrintAnnotation.class);
+				
+				//메소드 이름 출력
+				System.out.println("[" + method.getName() + "] ");
+				
+				//구분선 출력
+				for (int i = 0; i < printAnnotation.number(); i++) {
+					System.out.print(printAnnotation.value());
+					
+				}
+				System.out.println();
+				
+				try {
+					//메소드 호출
+					method.invoke(new Service()); //method 안에 어노테이션 정책을 적용시킴
+				} catch (Exception e) {
+					System.out.println();
+				}
+			}
 		}
 	}
+}
+```
 
-	// 정적 메소드
-	static void showStrValue() {
-		System.out.println(TEST_STR_VALUE);
+## Annotation 구현 부분
+> import java.lang.annotation.ElementType; <br>
+> import java.lang.annotation.Retention; <br>
+> import java.lang.annotation.RetentionPolicy; <br>
+> import java.lang.annotation.Target; <br>
+
+```java
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+
+public @interface PrintAnnotation {
+	String value() default "-";
+	int number() default 15;
+}
+```
+
+## Service Class
+
+```java
+public class Service {
+
+	@PrintAnnotation
+	public void method1() {
+		System.out.println("실행 내용 1");
+	}
+	
+	@PrintAnnotation("*")
+	public void method2() {
+		System.out.println("실행 내용 2");
+	}
+	
+	@PrintAnnotation(value = "#", number = 20)
+	public void method3() {
+		System.out.println("실행 내용 3");
 	}
 }
 ```
