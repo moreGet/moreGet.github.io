@@ -1,5 +1,5 @@
 ---
-date: 2020-01-05 22:00:00
+date: 2020-01-10 22:00:00
 layout: post
 title: Java 함수적 인터페이스 Consumer, Supplier
 subtitle: 함수적 인터페이스의 사용
