@@ -1,8 +1,8 @@
 ---
 date: 2020-01-23 22:00:00
 layout: post
-title: Java Consumer AndThen
-subtitle: Consumer의 AndThen 메소드 사용
+title: Java AndThen, Compose 사용
+subtitle: Consumer, Function의 AndThen과 Compose 사용
 description: "Current JDK : == JDK 1.8.0_231(64bit)"
 image: ../assets/img/postsimg/R_main_00000003.png
 optimized_image: ../assets/img/postsimg/R_op_00000003.png
