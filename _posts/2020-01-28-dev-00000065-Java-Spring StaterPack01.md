@@ -1,7 +1,7 @@
 ---
 date: 2020-01-28 22:00:00
 layout: post
-title: Java Spring 입문
+title: Java Spring 입문 Part.01
 subtitle: Spring Fw 사용을 위한 기초 
 description: "Current JDK : == JDK 1.8.0_231(64bit)"
 image: ../assets/img/postsimg/R_main_00000003.png
@@ -733,5 +733,339 @@ public class App implements CommandLineRunner{
   - 위 템플릿은 SQL구문 안에 파라미터를 삽입할 수 있도록 ':param' 형식의 플레이스 홀더를 이용
   - 일반적인 JDBC API는 ?를 플레이스 홀더로 사용하므로 불편
   - NamedPatameterJdbcTemplate의 플레이스홀더는 다루기 쉬움 오류를 방지
+  - 아래는 이를 위한 소스구현 부분 입니다.
 
+## App.java 구현 부분
 
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+
+@SpringBootApplication
+public class App implements CommandLineRunner{
+	
+	/*
+	 *	DI 컨테이너에 등록된 NamedParameter객체를 얻어옵니다.
+	 *	SpringBoot는 자동 설정 이라는 기능을 통해 DataSource나 JdbcTemplate, NamedParameter... 을 자동으로 생성하여
+	 *	DI 컨테이너에 등록 합니다.
+	 *	따라서 SpringBoot는 의존 lib에 spring-boot-starter-jdbc와 JDBC 드라이버만 추가하면 다른 설정을 하지 않아도
+	 *	위 템플릿을 사용할 수 있습니다. 이번 예제는 pom.xml에 H2의존 관계를 JDBC드라이버로 정의 했으므로 H2 데이터베이스용 DataSource가 
+	 *	생성됩니다. H2 DB를 사용하여 DB의 URL을 지정하는 일이 없다면 기본값으로 인 메모리 DB가 만들어집니다. DB설정이 번거롭지 않으므로
+	 *	동작을 확인하기에는 편리 합니다. 
+	 */
+	@Autowired
+	NamedParameterJdbcTemplate jdbcTemplate;
+	
+	@Override
+	public void run(String... args) throws Exception {
+		String sql = "SELECT 1"; // 간단한 SQL입니다. 문법상 맞지않는 DBMS도 있지만 H2는 그대로 1을 반환합니다.
+		
+		/*
+		 *  밑의 클래스로 SQL에 삽입할 param을 만듭니다 이번예제 에서는 param을 사용하지 않으므로
+		 *	디폴트 생성자를 이용 합니다. 이것 대신 Map<String, Objecr>를 사용 가능 하지만
+		 *	더 편리한 밑의 클래스를 사용합니다.
+		 */	
+		SqlParameterSource param = new MapSqlParameterSource();
+		
+		/*
+		 * queryForObject() 메소드를 사용하여 쿼리 실행 결과를 오브젝트로 변환한 상태로 얻어옵니다.
+		 * 첫번째 인자로 SQL, 두번째 인자로 param, 세번쨰 인자로 반환 값이 될 객체 클래스를 지정합니다.
+		 * 이 메소드는 쿼리 반환 값이 단일 레코드가 아니면 IncorrectResult... 예외를 발생 시킵니다.
+		 */
+		Integer result = jdbcTemplate.queryForObject(sql, param, Integer.class);
+		
+		System.out.println("result = " + result);
+	}
+	
+	public static void main(String[] args) {
+		SpringApplication.run(App.class, args);
+	}
+}
+```
+
+- 이제 param을 지정해보겠습니다. 아래는 수정된 App Class 입니다.
+- 위 부분에서 수정된 부분만 기재 합니다.
+
+```java
+	@Override
+	public void run(String... args) throws Exception {
+		String sql = "SELECT :a + :b"; // :a와 :b 라는 플레이스 홀더 사용
+
+		// 아래 param addValue() 메서드로 플레이스 홀더로 명시한 param값에  값을 넣어줌.
+		SqlParameterSource param = new MapSqlParameterSource()
+				.addValue("a", 100)
+				.addValue("b", 200);
+
+		Integer result = jdbcTemplate.queryForObject(sql, param, Integer.class);
+		
+		System.out.println("result = " + result);
+	}
+	
+	// 콘솔창에 결과값 300 출력 됨.
+	public static void main(String[] args) {
+		SpringApplication.run(App.class, args);
+	}
+```
+
+<hr>
+
+- 다음은 JdbcTemplate을 사용한 객체 매핑 입니다.
+- SQL의 실행결과를 Java객체에 매핑 하는 방법이다.
+- Customer클래스를 이용하여 SQL의 결과를 Customer객체에 매핑
+- 쿼리 결과를 위해 코드를 수정하는데 매핑을 위해 RowMapper를 익명 클래스로 구현
+- 아래는 수정된 App 이다.
+- 고객관리 어플리케이션(바로 위 프로젝트 구성)구성 과 프로젝트 구성이 같아야 합니다. (Customer 필요)
+
+```java
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+
+import com.example.app.domain.Customer;
+
+@SpringBootApplication
+public class App implements CommandLineRunner{
+
+	@Autowired
+	NamedParameterJdbcTemplate jdbcTemplate;
+	
+	@Override
+	public void run(String... args) throws Exception {
+		// customers 테이블에서 키를 지정하여 정보를 얻는 SQL를 작성
+		String sql = "SELECT id, first_name, last_name FROM customers WHERE id = :id";
+		
+		// 파라미터로 기본 키의 값을 설정합니다.
+		SqlParameterSource param = new MapSqlParameterSource()
+				.addValue("id", 1);
+		
+		// ResultSer에서 Customer 객체를 생성하는 RowMapper<Customer>를 구현합니다.
+		Customer result = jdbcTemplate.queryForObject(sql, param, new RowMapper<Customer>() {
+			@Override
+			public Customer mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return new Customer(rs.getInt("id"), 
+									rs.getString("first_name"), 
+									rs.getString("last_name"));
+			}
+		});
+		
+		System.out.println("result = " + result);
+	}
+	
+	public static void main(String[] args) {
+		SpringApplication.run(App.class, args);
+	}
+}
+```
+
+- 현재는 DB에 테이블이나 데이터를 등록하지 않은 상태라 실행시 예외가 발생 합니다.
+- SpringBoot에서는 클래스 패스 아래에 다음과 같은 SQL파일이 존재하면 그것을 읽어들여 실행 합니다.
+  - schema-플랫폼.sql
+  - schema.sql
+  - data-플랫폼.sql
+  - data.sql
+- 이번 예제에서는 src/main/resources/schema.sql에 이번에 사용할 DDL을 기술하고 src/main/resources/data.sql에 초기 데이터를 기술합니다.
+
+```sql
+-- src/main/resources/schema.sql 에 사용할 DDL
+CREATE TABLE customers (id INT PRIMARY KEY AUTO_INCREMENT, first_name VARCHAR(30), last_name VARCHAR(30));
+```
+
+```sql
+-- src/main/resources/data.sql 초기 데이터
+INSERT INTO customers(first_name, last_name) VALUES('Nobita', 'Nobi');
+INSERT INTO customers(first_name, last_name) VALUES('Nobita2', 'Nobi2');
+INSERT INTO customers(first_name, last_name) VALUES('Nobita3', 'Nobi3');
+INSERT INTO customers(first_name, last_name) VALUES('Nobita4', 'Nobi4');
+```
+
+- 헌데 App.class에 RowMapper<>를 익명 클래스로 구현한 게 조금 번잡스러워 보입니다.
+- 이는 Lambda식 으로 해결볼 수 있습니다.
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+
+import com.example.app.domain.Customer;
+
+@SpringBootApplication
+public class App implements CommandLineRunner{
+
+	@Autowired
+	NamedParameterJdbcTemplate jdbcTemplate;
+	
+	@Override
+	public void run(String... args) throws Exception {
+		// customers 테이블에서 키를 지정하여 정보를 얻는 SQL를 작성
+		String sql = "SELECT id, first_name, last_name FROM customers WHERE id = :id";
+		
+		// 파라미터로 기본 키의 값을 설정합니다.
+		SqlParameterSource param = new MapSqlParameterSource()
+				.addValue("id", 1);
+		
+		// ResultSer에서 Customer 객체를 생성하는 RowMapper<Customer>를 구현합니다.
+		// Lambda식 으로 코드를 간소화 합니다.
+		Customer result = jdbcTemplate.queryForObject(sql, param, (rs, num) -> new Customer(
+				rs.getInt("id"), rs.getString("first_name"), rs.getString("last_name")));
+		
+		System.out.println("result = " + result);
+	}
+	
+	public static void main(String[] args) {
+		SpringApplication.run(App.class, args);
+	}
+}
+```
+
+- 위 람다식으로 래퍼 클래스를 간소화 하니 코드가 간결.
+- 스프링 프레임워크에는 익명 클래스를 인자로 받는 XXXTemplate 형태의 클래스가 많으므로 람다 표현식을 사용하면쉽게 기술할 수 있습니다.
+- SQL파일에 한국어를 사용하려면 src/main/resources/application.yml 파일에 아래 코드 지정 필요
+  - spring.datasource.sqlScriptEncoding: UTF-8
+
+## Chapter.04-4 데이터 소스 설정을 명시적으로 변경하기
+
+- 지금까지는 JDBC설정이 자동으로 일어나는 것을 사용 했습니다.
+- H2 DB용 JDBC드라이버를 의존관계로 추가하면 기본값으로 내장되어 있는 인 메모리 DB를 사용 합니다 따라서 JDBC설정을 변경 하려면 설정 파일에 명시적 설정이 필요
+- 스프링 부트에서 속성 설정은 클래스 패스 바로 아래에 있는 application.properties 또는 application.yml에 기술합니다.
+- 일단은 지금까지 인 메모리 데이터베이스를 사용해온 상태로 명시적으로 설정 하겠습니다.
+- 위 두파일 중 가지고 있는 설정파일안에 설정합니다.
+
+```properties
+spring:
+	datasource:
+		driverClassName: org.h2.Driver
+		url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+		username: sa
+		password:
+```
+
+- 위는 DBMS 속성정보를 가진 설정 파일 입니다.
+- 위 처럼 설정하면 App이 실행을 끝낼 때마다 데이터가 사라집니다.
+- 데이터가 지속되도록 하기 위해 H2 DB를 File DB방식으로 사용하도록 설정을 변경 하겠습니다.
+- 아래와 같이 url 속성을 바꿔 줍니다.
+
+```properties
+spring:
+	datasource:
+		driverClassName: org.h2.Driver
+		url: jdbc:h2:file:/tmp/testdb
+		username: sa
+		password:
+```
+
+- 위와 같이 설정후 App.java를 실행하면 C:\tmp\testdb.h2.db라는 파일이 생성되며, 이 파일에 DB정보가 입력되어 지속 됩니다.
+- 전에 설정해 놓았던 schema.sql이 App이 실행될떄 마다 반복 실행되어 예외가 발생하는데 이를 방지하기 위해 아래처럼 스키마를 수정 합니다.
+
+```sql
+CREATE TABLE IF NOT EXISTS customers (id INT PRIMARY KEY AUTO_INCREMENT, first_name VARCHAR(30), last_name VARCHAR(30));
+```
+
+- 다만 data.sql은 여러번 실행 됩니다.
+- 위 프로퍼티 파일의 다른 공식은 레퍼런스 페이지를 참조 해야 합니다.
+- https://docs.spring.io/spring-boot/docs
+- 현재 사용하는 버전 https://docs.spring.io/spring-boot/docs/2.2.4.RELEASE/reference/html/appendix-application-properties.html#common-application-properties
+- 다음 챕터의 Flyway를 이용한 DB 마이그레이션 이후에는 파일에 보존하는 DB를 사용 합니다.
+
+## Chapter.04-5 Log4JDBC로 SQL 로그 출력하기
+
+- 작업의 질 향상을 위한 SQL 로그 출력 방법 입니다.
+- Log4JDBC를 사용해서 JDBC 드라이버를 프록시(proxy)로 래핑하여 SQL 로그를 출력하는 방법 입니다.
+- 아래는 추가할 설정입니다. (pom.xml)
+
+```xml
+<!-- Log4JDBC 의존 관계 -->
+<dependency>
+	<groupId>org.lazyluke</groupId>
+	<artifactId>log4jdbc-remix</artifactId>
+	<version>0.2.7</version>
+</dependency>
+```
+
+- Log4JDBC가 SQL 로그를 출력하도록 Logback의 레벨을 설정합니다.
+- src/main/resources/logback.xml 파일을 다음과 같이 설정 합니다.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>\
+	
+	<!-- 스프링 부트에 이미 마련되어 있는 기본 설정을 포함 -->
+	<include resource = "org/springframework/boot/logging/logback/base.xml" />
+	
+	<!-- Log4JDBC는 다양한 로그를 출력하는데, 여기서는 SQL로그만 출력 그 외의 내용은 OFF설정 -->
+	<logger name = "jdbc" level="OFF" />
+	
+	<!-- SQL로그는 디버그 레벨로 출력되므로 DEBUG로 설정 합니다. -->
+	<!-- jdbc.sqltiming 로그는 "SQL문 + 실행 시간" 형식으로 로그를 출력 합니다. -->
+	<logger name = "jdbc.sqltiming" level="DEBUG" />
+
+</configuration>
+```
+
+## Chapter.04-5 Log4JDBC용 DataSource 정의
+
+- 지금까지는 스프링 부트의 @EnableAuto... 어노테이션을 붙히면 DataSource가 DI 컨테이너에 자동으로 등록 되었습니다. 따라서 Log4JDBC를 사용하려면 DataSource를 명시적으로 정의해야 합니다.
+- 아래는 AppConfig Class 입니다.
+
+```java
+import net.sf.log4jdbc.Log4jdbcProxyDataSource;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+
+@Configuration
+public class AppConfig {
+	
+	@Autowired
+	DataSourceProperties dataSrcProp; // 데이터 소스를 명시적으로 C드라이브에 저장 했습니다. 이 속성값 들을 가져옵니다.
+	DataSource dataSrc; // 여기에 위 prop변수에 내포되어 있는 속성값 들을 아래 래핑 작업으로 래핑해줍니다.
+	
+	@Bean
+	DataSource realDataSource() {
+		// 스프링 데이터가 제공하는 Builder클래스로 DataSource 인스턴스를 생성 합니다.
+		DataSourceBuilder factory = DataSourceBuilder
+				.create(this.dataSrcProp.getClassLoader())
+				.url(this.dataSrcProp.getUrl())
+				.username(this.dataSrcProp.getUsername())
+				.password(this.dataSrcProp.getPassword());
+		
+		this.dataSrc = factory.build();
+		return this.dataSrc;
+	}
+	
+	@Bean
+	@Primary
+	DataSource dataSource() {
+		// Log4jdbcProxyDataSource 클래스로 DataSource를 래핑합니다. 이 클래스가 DataSource에 구현된
+		// 각각의 처리에 로깅 처리를 끼워 넣습니다.
+		return new Log4jdbcProxyDataSource(this.dataSrc);
+	}
+}
+```
+
+- DataSource를 명시적으로 정의하면 @EnableAutoConfiguration의 자동 등록 기능은 무시합니다.
+- 이 Bean 정의 파일을 읽어들이기 위해 다음과 같이 App 클래스에 @ComponentScan을 붙여 둡니다. 
+- App클래스에는 @SpringBootApplication 어노테이션이 존재 하기 때문에 Scan 어노테이션은 필요 없습니다.
+- 실행하면 콘솔에 로그가 출력 됩니다.
