@@ -3,7 +3,7 @@ date: 2020-01-31 22:00:00
 layout: post
 title: Java SpringBoot 입문 Part.02
 subtitle: SpringBoot FrameWork 사용을 위한 기초 
-description: "Current JDK : == JDK 1.8.0_231(64bit)"
+description: "SpringBoot 2.0"
 image: ../assets/img/postsimg/R_main_00000003.png
 optimized_image: ../assets/img/postsimg/R_op_00000003.png
 category: coding

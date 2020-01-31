@@ -1,0 +1,175 @@
+---
+date: 2020-01-31 22:00:00
+layout: post
+title: Vanilla JavaScript 기초
+subtitle: Vanilla JavaScript 기초를 탄탄하게
+description: Vanilla JavaScript
+image: ../assets/img/postsimg/R_main_00000003.png
+optimized_image: ../assets/img/postsimg/R_op_00000003.png
+category: coding
+tags:
+  - Java
+  - Vanilla JavaScript
+  - Vanilla
+  - JavaScript
+  - vsCode
+  - Web
+author: thiagorossener
+# image:760*400
+# optimized_image:380*200
+---
+
+- 연산자
+
+# <span style="color:#50050004"> vsCode로 Js를 하기위한 플러그인 </span>
+- open in browser : 툴 안에서 웹을 띄워줌.
+- code Runner : 여러언어 들을 컴파일 해줌
+- Debugger for Chrome : Js를 디버깅 하려면 필요하다.
+- nodejs.org/ko/ : VSCode에서 디버깅 하기 위해 있으면 좋다.
+    - js파일 만든후 ctrl+F5 -> launch.json -> ${work...} 부분을 ${file} 로 변경
+-> 동작 확인.
+
+<hr>
+
+## JavaScript 기본 문법
+
+// 내용 or /* 내용 */ : 한줄 주석, 여러줄 주석
+let : 변수 형태 누구나 값을 대입 할 수 있다.
+var : let과 비슷함. let을 쓰는 것이 좋다.
+const : 상수 형태 값을 바꿀 수 없다.
+
+<hr>
+
+## 변수 형태
+- const name = "Shin"; // String
+- const bo = true; // Boolean
+- const num = 555; // Number
+- const float = 3.14; // Float
+
+<hr>
+
+## 배열
+
+```js
+// 기본적인 배열 문법
+// 자료형 과 상관 없이 배열에 모든 자료형을 다 대입 가능
+// 변수도 대입 가능
+const daysOfWeek = [ "Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun" ];
+
+// 배열 인덱스
+console.log("요일 배열 첫번째 요소 : " + daysOfWeek[1]);
+
+## 객체 생성
+// 기본 생성 문법
+const tempArr = {
+    name:"Shin",
+    age:28,
+    gender:"Male",
+    isLapTop:true,
+    favMovies:["OldBoy", "Lotr"],
+    favFood:[ // 2차원 배열 비슷
+        {
+            name:"Kim", 
+            fatty:false
+        }, 
+        {
+            name:"cheese burger", 
+            fatty:true
+        }]
+} // 콜론은 없어도 된다.
+
+// 객체 접근 방법
+console.log("tempArr객체의 favFood 배열의 0번 name 접근 : " + tempArr.favFood[0].name);
+console.log("tempArr객체 의 name변수 : " + tempArr.name);
+console.log("tempArr객체 의 gender변수 : " + tempArr.gender);
+
+// 객체 변수 변경
+tempArr.gender = "Female";
+console.log("tempArr.gender 변경 : " + tempArr.gender);
+```
+
+<hr>
+
+## JS의 Function
+
+```js
+// 간단한 함수 정의
+function printConsole(paramsStr, paramsInt) {
+    console.log("Hello! " + paramsStr + " " + paramsInt); // 콘솔
+}
+
+function printDocument(paramsStr, paramsInt) {
+    document.write("Hello! " + paramsStr + " " + paramsInt); // 페이지 뷰
+}
+
+printConsole("Shin", 20);
+printDocument("Kim", 25);
+
+// 백틱(`) 문법
+function printBackTick(name, age) {
+    document.write(`Hello ${name} you are ${age} years old`);
+}
+
+printBackTick("김예지", 25);
+// 출력값 :: Hello 김예지 you are 25 years old
+```
+
+<hr>
+
+## JS의 Function Return
+
+```js
+
+function printBackTick(name, age) {
+    return `Hello ${name} you are ${age} years old`;
+}
+
+const backTickStrValue = printBackTick("김예지", 25);
+document.write(backTickStrValue);
+```
+
+<hr>
+
+## 함수 객체 구현 (Class 비슷)
+
+- 아래는 4칙연산 계산기 예제
+
+```js
+function printConsole(paramsStr) {
+    console.log(paramsStr); // 콘솔
+}
+
+function printDocument(paramsStr) {
+    document.write(paramsStr); // 페이지 뷰
+}
+
+const calculator = {
+    plus: function(a, b) {
+        return a + b;
+    },
+
+    minus: function(a, b) {
+        return a - b;
+    },
+
+    divide: function(a, b) {
+        return a / b;
+    },
+
+    multi: function(a, b) {
+        return a * b;
+    }
+}
+
+const plus = calculator.plus(10, 20);
+const min = calculator.minus(10, 20);
+const div = calculator.divide(10, 20);
+const mul = calculator.multi(10, 20);
+
+const arr = [plus, min, div, mul];
+printDocument(arr);
+```
+
+<hr>
+
+## 다음은?
