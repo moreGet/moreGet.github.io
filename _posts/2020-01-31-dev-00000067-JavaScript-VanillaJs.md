@@ -19,9 +19,7 @@ author: thiagorossener
 # optimized_image:380*200
 ---
 
-- 연산자
-
-# <span style="color:#50050004"> vsCode로 Js를 하기위한 플러그인 </span>
+# <span style="color:#EEF983"> vsCode로 Js를 하기위한 플러그인 </span>
 - open in browser : 툴 안에서 웹을 띄워줌.
 - code Runner : 여러언어 들을 컴파일 해줌
 - Debugger for Chrome : Js를 디버깅 하려면 필요하다.
@@ -31,7 +29,7 @@ author: thiagorossener
 
 <hr>
 
-## JavaScript 기본 문법
+## <span style="color:#EEF983">JavaScript 기본 문법
 
 // 내용 or /* 내용 */ : 한줄 주석, 여러줄 주석
 let : 변수 형태 누구나 값을 대입 할 수 있다.
@@ -40,7 +38,7 @@ const : 상수 형태 값을 바꿀 수 없다.
 
 <hr>
 
-## 변수 형태
+## <span style="color:#EEF983">변수 형태
 - const name = "Shin"; // String
 - const bo = true; // Boolean
 - const num = 555; // Number
@@ -48,7 +46,7 @@ const : 상수 형태 값을 바꿀 수 없다.
 
 <hr>
 
-## 배열
+## <span style="color:#EEF983">배열
 
 ```js
 // 기본적인 배열 문법
@@ -90,7 +88,7 @@ console.log("tempArr.gender 변경 : " + tempArr.gender);
 
 <hr>
 
-## JS의 Function
+## <span style="color:#EEF983">JS의 Function
 
 ```js
 // 간단한 함수 정의
@@ -116,7 +114,7 @@ printBackTick("김예지", 25);
 
 <hr>
 
-## JS의 Function Return
+## <span style="color:#EEF983">JS의 Function Return
 
 ```js
 
@@ -130,7 +128,7 @@ document.write(backTickStrValue);
 
 <hr>
 
-## 함수 객체 구현 (Class 비슷)
+## <span style="color:#EEF983">함수 객체 구현 (Class 비슷)
 
 - 아래는 4칙연산 계산기 예제
 
@@ -174,4 +172,55 @@ printDocument(arr);
 
 <hr>
 
-## 다음은?
+## <span style="color:#EEF983">html 기본 
+
+```html
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Js</title>
+        <link rel="stylesheet" href="css파일" />
+    </head>
+
+    <body>
+        <!-- id로 css 참조 -->
+        <h1 id = "title"> Welcome To JavaScript h1 </h1>
+        <!-- class로 css 참조 -->
+        <h2> Welcome To JavaScript h2 </h2>
+        
+        <!-- js파일은 항상 body아래에 있어야 함 -->
+        <script src="js파일">
+        </script>
+    </body>
+</html>
+```
+
+## <span style="color:#EEF983">css파일
+
+```css
+/* class */
+body {
+    background-color: peru;
+}
+
+h1 {
+    color: black;
+}
+/* class */
+
+/* id */
+#title {
+    color: aquamarine;
+}
+/* id */
+```
+
+- 이 상태로 index.html을 웹으로 띄우면 위 설정 대로 나옴
+
+<hr>
+
+## <span style="color:#EEF983">JS로 HTML Document 핸들링 하기
+
+- 위에서 정의한 css파일로 js를 이용해 HTML에 효과 주기
+
