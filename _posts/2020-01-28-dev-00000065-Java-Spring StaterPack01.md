@@ -49,6 +49,8 @@ author: thiagorossener
   - Lombok설치 -> https://projectlombok.org/download -> jar파일 다운로드후 더블클릭 -> 인스톨 되어있는 이클립스 및 STS툴 자동탐색됨 -> 이후 [install/update] 버튼 클릭
   - curl설치 -> https://curl.haxx.se/download.html 에서 win64 - generic 항목 찾아봄 -> 200129기준 curl-7.68.0-win64-mingw.zip 다운로드 후 C드라이브 root 폴더에 압축해제 -> curl bin경로 환경변수 셋팅 -> curl -V으로 정상설치 확인
 
+<hr>
+
 ## Chapter.01 기본 프로젝트 시작
 
 - 기본 프로젝트 만들기
@@ -133,6 +135,8 @@ author: thiagorossener
 
 - mvn dependency:tree 명령어로 위 설정한 내용만으로도 얼마나 많은 라이브러리를 사용할 수 있게 되는지 확인해봅시다.
 
+<hr>
+
 ## Chapter.02
 - STS로 Spring 개발하기
   - 전에 만들어둔 소스 가져오기 -> STS -> file -> import -> maven -> Existing Maven Projects -> 소스폴더 클릭후 xml추가 -> STS 왼쪽에 프로젝트 생성 완료됨. -> src/main/java -> com.example.App.java 오른쪽 클릭후 Spring Boot App 실행 하면 됨.
@@ -205,6 +209,8 @@ public class App
 	</build>
 ```
 
+<hr>
+
 ## Chapter.03 스프링 프레임워크에서 구현하는 DI
 - DI(Dependency Injection)란 의존성 주입의 줄임말이며, 스프링 프레임워크의 핵심 기술입니다.
 - DI를 사용하면 클래스 사이의 의존 관계를 자동으로 구성
@@ -214,6 +220,8 @@ public class App
   - 인스턴스의 Life Cycle을 이벤트로 제어할 수 있다.(생성과 소멸 이벤트 처리)
   - 공통 처리를 포함할 수 있다.(트랜잭션 관리나 로깅처리)
   - 객체 사이의 의존 관계가 느슨해지므로 유닛 테스트를 하기 쉬워집니다.
+
+<hr>
 
 ## Chapter.03-1 맛보기 만들기
 
@@ -302,6 +310,8 @@ public class App {
 ```
 
 - 위 처럼 DI컨테이너를 Import로 지정해주고 DI컨테이너를 관리한다면 어플리케이션 안에 있는 모듈 사이의 의존성이 느슨해지고 독립성이 커집니다.
+
+<hr>
 
 ## Chapter.03-2 어플리케이션 추상화하기
 
@@ -421,6 +431,8 @@ public class App {
 - 지금까지 DI 컨테이너에서 Bean을 가져오는 방법을 설명 했습니다. 아직 의존성 주입(DI)은 하지 않았습니다. 이런 방식으로 프로그램이 커진다면 App클래스 안에서 context.getBean()을 호출할 일이 많아지면서 관련 모듈이 늘어나고 코드가 지저분해질 것입니다. 
 - 이 문제를 해결하는 데 필요한 것이 DI입니다. DI를 사용하도록 어플리케이션을 수정 하겠습니다.
 
+<hr>
+
 ## Chapter.03-3 오토 와이어링을 이용한 DI
 
 - 지금까지는 DI 컨테이너(App.java) 에서 명시적으로 Bean을 가져오도록 App 클래스를 구현했습니다. 이번에는 DI 컨테이너가 클래스에 Bean을 주입(Injection) 하도록 구현 하겠습니다. 먼저 App 클래스에 구현한 처리를 정리할 FrontEnd 클래스를 만듭니다. 이미 작성한 Calculator와 ArgumentResolver를 이 Frontend 클래스에 주입합니다.
@@ -501,6 +513,8 @@ public class App {
 - 이전 DI컨테이너(App.java) 소스코드 보다 간결해 졌다.
 - @Import() 에 config(Bean정의 파일)클래스 를 임포트 시켜 getBean으로 받아 클래스를 구현 했다. 오토와이어링을 적용한 DI컨테이너의 코드는 이렇게 간결하다.
 
+<hr>
+
 ## Chapter.03-5 컴포넌트 스캔을 사용하여 자동으로 Bean 등록하기
 
 - 그 다음 해결해야 할 문제는 DI 컨테이너에 등록할 Bean을 하나하나 정의하기가 번거롭다는 것 입니다. 스프링 프레임워크는 Bean을 DI 컨테이너에 자동으로 드옥하는 컴포넌트 스캔 이라는 기능을 통해 이 문제를 해결합니다.
@@ -508,6 +522,8 @@ public class App {
 - @ComponentScan의 Scope에 반영되기 위해선 반영을 원하는(자동 Bean 등록) 클래스 에 @Component 어노테이션을 명시 합니다.
 - 여기선 AddCalculator, ScannerArgumentResolver, Frontend 클래스에 붙혀 줍니다.
 - 자! 이제 위 ComponentScan으로 인해 AppConfig 클래스는 필요가 없습니다! 이 클래스를 삭제후 소스를 동작 시켜 봅니다!
+
+<hr>
 
 ## Chapter.03-6 CommandLineRunner 사용하기
 
@@ -557,6 +573,8 @@ public class App implements CommandLineRunner{ // 앞서 구현한 FrontEnd 클�
 
 ![commandLineRunner](/assets/sources/commandLineRunner.jpg "SpringBoot")
 
+<hr>
+
 ## Chapter.03-7 레이어로 구성한 컴포넌트 주입하기
 
 - 스프링 프레임워크에는 @Component 외에도 컴포넌트 스캔의 대상이 되는 어노테이션이 있습니다.
@@ -579,6 +597,8 @@ public class App implements CommandLineRunner{ // 앞서 구현한 FrontEnd 클�
 - 보통 각 레이어에 클래스를 만들고 DI 컨테이너가 이 클래스들을 주입하도록 구성 합니다.
 - 어플리케이션에서는 서비스 클래스가 엔티티 같은 도메인 객체의 컬렉션인 리포지토리 클래스를 사용하여 로직을 조합하며, 엔트리 포인트(웹 에서는 컨트롤러)가 사용자의 요청에 맞춰 서비스 클래스를 호출합니다.
 - 의존성 해결은 DI 컨테이너에 맡깁니다.
+
+<hr>
 
 ## Chapter.04-1 리포지토리와 서비스를 이용한 간단한 고객 과닐 시스템 어플 만들기
 
@@ -700,6 +720,8 @@ public class App implements CommandLineRunner{
 ```
 
 - 실행 하게 되면 선언한 동시성 성질을가진 HashMap에 누적시킨 고객 요소가 출력 된다.
+
+<hr>
 
 ## Chapter.04-2 스프링 JDBC를 사용한 DB접속
 
@@ -939,6 +961,8 @@ public class App implements CommandLineRunner{
 - SQL파일에 한국어를 사용하려면 src/main/resources/application.yml 파일에 아래 코드 지정 필요
   - spring.datasource.sqlScriptEncoding: UTF-8
 
+<hr>
+
 ## Chapter.04-4 데이터 소스 설정을 명시적으로 변경하기
 
 - 지금까지는 JDBC설정이 자동으로 일어나는 것을 사용 했습니다.
@@ -983,89 +1007,73 @@ CREATE TABLE IF NOT EXISTS customers (id INT PRIMARY KEY AUTO_INCREMENT, first_n
 - 현재 사용하는 버전 https://docs.spring.io/spring-boot/docs/2.2.4.RELEASE/reference/html/appendix-application-properties.html#common-application-properties
 - 다음 챕터의 Flyway를 이용한 DB 마이그레이션 이후에는 파일에 보존하는 DB를 사용 합니다.
 
-## Chapter.04-5 Log4JDBC로 SQL 로그 출력하기
+<hr>
 
-- 작업의 질 향상을 위한 SQL 로그 출력 방법 입니다.
-- Log4JDBC를 사용해서 JDBC 드라이버를 프록시(proxy)로 래핑하여 SQL 로그를 출력하는 방법 입니다.
-- 아래는 추가할 설정입니다. (pom.xml)
+## Chapter.04-5 Log4JDBC2
+
+- 개발 과 유지보수 시 좀더 작업향상을 위해 Log4jdbc 를 사용합니다.
+  - 참고 사이트 http://log4jdbc.brunorozendo.com/how-to-use.html
+- 해야할 작업은 다음과 같습니다
+  - pom.xml 의존성 추가
+  - application.properties 수정
+  - /src/main/resources 폴더에 logback-sptring.xml 생성 및 설정
+  - 입니다.
+
+### pom.xml 의존성 추가
 
 ```xml
-<!-- Log4JDBC 의존 관계 -->
 <dependency>
-	<groupId>org.lazyluke</groupId>
-	<artifactId>log4jdbc-remix</artifactId>
-	<version>0.2.7</version>
+	<groupId>org.bgee.log4jdbc-log4j2</groupId>
+	<artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
+	<version>1.16</version>
 </dependency>
 ```
 
-- Log4JDBC가 SQL 로그를 출력하도록 Logback의 레벨을 설정합니다.
-- src/main/resources/logback.xml 파일을 다음과 같이 설정 합니다.
+### application.properties 설정
+
+```properties
+# spring.datasource.url=jdbc:h2:file:C:/tmp/testdb
+spring.datasource.url=jdbc:log4jdbc:h2:file:C:/tmp/testdb;AUTO_SERVER=TRUE
+spring.datasource.driver-class-name=net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+
+# spring.datasource.url=jdbc:h2:mem:testdb
+
+spring.datasource.data-username=sa
+spring.datasource.data-password=
+
+# base Properties ON/OFF
+spring.h2.console.enabled=false
+```
+
+### logback-spring.xml 설정
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>\
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml"/>
 	
-	<!-- 스프링 부트에 이미 마련되어 있는 기본 설정을 포함 -->
-	<include resource = "org/springframework/boot/logging/logback/base.xml" />
-	
-	<!-- Log4JDBC는 다양한 로그를 출력하는데, 여기서는 SQL로그만 출력 그 외의 내용은 OFF설정 -->
-	<logger name = "jdbc" level="OFF" />
-	
-	<!-- SQL로그는 디버그 레벨로 출력되므로 DEBUG로 설정 합니다. -->
-	<!-- jdbc.sqltiming 로그는 "SQL문 + 실행 시간" 형식으로 로그를 출력 합니다. -->
-	<logger name = "jdbc.sqltiming" level="DEBUG" />
-
+	<!-- 좀 더 보기 좋은 MyBatis 쿼리 Log : log4jdbc -->
+	<logger name="jdbc.sqlonly" level="debug" />
+	<logger name="jdbc.sqltiming" level="off" />
+	<logger name="jdbc.audit" level="off" />
+	<logger name="jdbc.resultset" level="off" />
+	<logger name="jdbc.resultsettable" level="debug" />
+	<logger name="jdbc.connection" level="off" />
 </configuration>
 ```
 
-## Chapter.04-5 Log4JDBC용 DataSource 정의
+- jdbc.sqlonly : SQL만 log. prepared statement에서 실행된 SQL은 해당 위치에 바인딩된 argument로 자동으로 표시되므로 가독성이 크게 향상된다.
+- jdbc.sqltiming : 실행시간과 SQL log
+- jdbc.audit : ResultSets을 제외한 모든 JDBC 호출 log. 이는 매우 방대한 출력이며 특정 JDBC 문제를 추적할 경우가 아니면 일반적으로 필요하지 않음
+- jdbc.resultset : ResultSet 객체에 대한 모든 호출이 기록되므로 훨씬 더 방대
+- jdbc.resultsettable : 테이블로 jdbc 결과를 log. Level debug는 result set에서 읽지 않은 값을 채운다
+- jdbc.connection : connection open, close 이벤트를 기록하고 열려있는 모든 connection number를 dump. connection 누수 문제를 해결하는데 매우 유용
+- 참고 블로그 : https://sosohanya.tistory.com/31
 
-- 지금까지는 스프링 부트의 @EnableAuto... 어노테이션을 붙히면 DataSource가 DI 컨테이너에 자동으로 등록 되었습니다. 따라서 Log4JDBC를 사용하려면 DataSource를 명시적으로 정의해야 합니다.
-- 아래는 AppConfig Class 입니다.
+<hr>
 
-```java
-import net.sf.log4jdbc.Log4jdbcProxyDataSource;
+## Chapter.04-6 JdbcTemplate으로 리포지토리 클래스 구현하기
 
-import javax.sql.DataSource;
+- 앞서 만든 Customerepository 클래스를 NamedParameterJdbcTemplate을 사용해서 다시 Customer 객체는 메모리에서 DB로 저장됩니다.
+- 지금까지 NamedParameterJdbcTemplate을 사용해서 DB를 참조 했습니다. 이제 CustomerRepository 클래스를 구현해서 DB를 업데이트하는 방법을 설명하겠습니다.
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-
-@Configuration
-public class AppConfig {
-	
-	@Autowired
-	DataSourceProperties dataSrcProp; // 데이터 소스를 명시적으로 C드라이브에 저장 했습니다. 이 속성값 들을 가져옵니다.
-	DataSource dataSrc; // 여기에 위 prop변수에 내포되어 있는 속성값 들을 아래 래핑 작업으로 래핑해줍니다.
-	
-	@Bean
-	DataSource realDataSource() {
-		// 스프링 데이터가 제공하는 Builder클래스로 DataSource 인스턴스를 생성 합니다.
-		DataSourceBuilder factory = DataSourceBuilder
-				.create(this.dataSrcProp.getClassLoader())
-				.url(this.dataSrcProp.getUrl())
-				.username(this.dataSrcProp.getUsername())
-				.password(this.dataSrcProp.getPassword());
-		
-		this.dataSrc = factory.build();
-		return this.dataSrc;
-	}
-	
-	@Bean
-	@Primary
-	DataSource dataSource() {
-		// Log4jdbcProxyDataSource 클래스로 DataSource를 래핑합니다. 이 클래스가 DataSource에 구현된
-		// 각각의 처리에 로깅 처리를 끼워 넣습니다.
-		return new Log4jdbcProxyDataSource(this.dataSrc);
-	}
-}
-```
-
-- DataSource를 명시적으로 정의하면 @EnableAutoConfiguration의 자동 등록 기능은 무시합니다.
-- 이 Bean 정의 파일을 읽어들이기 위해 다음과 같이 App 클래스에 @ComponentScan을 붙여 둡니다. 
-- App클래스에는 @SpringBootApplication 어노테이션이 존재 하기 때문에 Scan 어노테이션은 필요 없습니다.
-- 실행하면 콘솔에 로그가 출력 됩니다.
