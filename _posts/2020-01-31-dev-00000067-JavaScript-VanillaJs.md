@@ -224,3 +224,20 @@ h1 {
 
 - 위에서 정의한 css파일로 js를 이용해 HTML에 효과 주기
 
+```js
+// index.html, index.css 로 프로젝트를 구성 한 상태에서 하길 권장.
+const cssTitle = document.getElementById("title"); // title 태그 객체 가져옴
+
+console.log(title); // title 객체 출력 해봄
+console.error("Error"); // error 띄우기
+// DOM = Document Object Module
+
+cssTitle.innerHTML = "Hi! From JS"; // HTML에 title객체 바꾸기
+```
+
+<hr>
+
+## <span style="color:#EEF983">DOM 객체 이용하기
+
+```js
+```
