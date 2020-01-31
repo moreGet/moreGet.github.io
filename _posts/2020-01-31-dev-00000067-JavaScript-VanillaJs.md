@@ -238,6 +238,21 @@ cssTitle.innerHTML = "Hi! From JS"; // HTML에 title객체 바꾸기
 <hr>
 
 ## <span style="color:#EEF983">DOM 객체 이용하기
+- console.dir(객체); 를 이용하면 그에 대한 함수들이 출력된다.
+- 이를 이용해 js로 html을 핸들링 할 수 있다.
+- 아래 객체.함수 형식으로 되어 있는 것들의 함수 부분은 전부 dir로 출력후 찾아 본거다.
 
 ```js
+const cssTitle = document.getElementById("title"); // title 태그 객체 가져옴
+cssTitle.innerHTML = "Hi! From JS"; // HTML에 title객체 바꾸기
+cssTitle.style.color = "red"; // font color 바꾸기
+document.title = "i Love"; // 웹 title 바꾸기
+
+console.dir(cssTitle); // DOM객체 title의 함수들을 콘솔로 출력 해보기
+console.dir(document);
+
+// css 클래스는 .title, id는 #title
+const temp = document.querySelector("#title"); // html에 title은 id로 되어 있음
+console.log(temp);
+// 출력값 : <h1 id="title" style="color: red;">Hi! From JS</h1>
 ```
