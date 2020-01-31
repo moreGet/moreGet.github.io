@@ -168,6 +168,8 @@ const mul = calculator.multi(10, 20);
 
 const arr = [plus, min, div, mul];
 printDocument(arr);
+
+// 출력값 : 30,-10,0.5,200
 ```
 
 <hr>
