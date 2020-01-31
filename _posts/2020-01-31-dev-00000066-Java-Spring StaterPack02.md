@@ -90,4 +90,15 @@ public class Customer {
 
 ## Chapter.01-2 SpringData JAP로 리포지토리 클래스 작성하기
 
-- 
+- 스프링 데이터는 데이터 저장소 조작을 위한 범용 기능을 제공하는 하위 프로젝트 입니다.
+- RDBMS, MongoDB, Redis, Neo4J 같은 데이터 저장소를 조작할 수 있습니다.
+- 그리고 범용 리포지토리 클래스도 제공합니다.
+- 여기선 JPA로 RDBMS를 조작하는 스프링 데이터 JPA를 이용합니다. 
+- SpringData JPA가 제공하는 JpaRepository를 사용하여 CustomerRepository를 다시 작성합니다.
+- 아래는 CustomerRepository 클래스 입니다.
+
+### com.example.app.reposioCustomerRepository Class
+
+```java
+
+```
