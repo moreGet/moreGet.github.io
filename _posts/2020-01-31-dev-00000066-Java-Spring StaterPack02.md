@@ -168,6 +168,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 }
 ```
 
+<hr>
+
 ## Chapter.01-4 페이징 처리 구현하기
 
 - 스프링 데이터에는 데이터 접속 시 페이징 처리를 쉽게 할 수 있는 기능이 마련되어 있습니다. JpaRepository에 페이징 처리용 메소드가 포함되어 있습니다.
@@ -247,3 +249,395 @@ public class App implements CommandLineRunner{
 }
 ```
 
+<hr>
+
+## Chapter.02-1 REST Web Service 만들기
+
+- REST 웹 서비스
+- 와면에 표시하는 웹 어플리케이션
+- REST 웹 서비스 = 웹 API 개발 이다.
+- HTTP를 통해 클라이언트(JS등...) 와 데이터를 주고 받는 엔드 포인트가 되는 서비스 입니다.
+- 프론트엔드 : HTML, JS, 백엔드 : REST 웹서비스 개발 추세
+
+### CUstomerService의 CURD처리 구현하기
+
+```java
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.app.domain.Customer;
+import com.example.app.repository.CustomerRepository;
+
+//이러한 클래스를 DI컨테이너 에서 가져오고 해당 클래스에 속한 각 메소드를 다른 클래스에서 호출 하면 DB 트랜잭션이 자동으로 이루어 집니다.
+//메서드가 제대로 실행되면 DB 트랜잭션이 커밋됩니다.
+//실행 도중 오류가 발생하면 DB 트랜잭션이 롤백 됩니다.
+//DI 컨테이너는 각 메소드 앞뒤에 처리를 추가한 클래스를 동적으로 생성합니다.
+@Transactional
+public class CustomerService {
+	@Autowired
+	CustomerRepository customerRepository;
+	
+	public List<Customer> findAll() {
+		return customerRepository.findAllOrderByName();
+	}
+	
+	public Customer findOne(Integer id) {
+		return customerRepository.getOne(id);
+	}
+	
+	public Customer create(Customer customer) {
+		return customerRepository.save(customer);
+	}
+	
+	public Customer update(Customer customer) {
+		return customerRepository.save(customer);
+	}
+	
+	public void delete(Integer id) {
+		customerRepository.deleteById(id);
+	}
+}
+```
+
+- 먼저 고객 관리 시스템을 REST 방식으로 제작 하겠습니다.
+- 아래는 공개할 웹 API 목록 입니다.
+
+| API 이름                   | HTTP 메서드 | 리소스 경로         | 정상 동작 시 응답 상태 |
+|----------------------------|-------------|---------------------|------------------------|
+| 모든 고객 정보 얻기        | GET         | /api/customers      | 200 OK                 |
+| 고객 한 명의 정보 얻기     | GET         | /api/customers/{id} | 200 OK                 |
+| 신규 고객 정보 작성        | POST        | /api/customers      | 201 CREATED            |
+| 고객 한 명의 정보 업데이트 | PUT         | /api/customers/{id} | 200 OK                 |
+| 고객 한 명의 정보 삭제     | DELETE      | /api/customers/{id} | 204 NO CONTENT         |
+
+- REST 웹 서비스를 만들기 위해 pom.xml을 다음과 같이 작성합니다.
+
+<hr>
+
+## Chapter.02-2 모든 고객 정보 얻기, 고객 한 명의 정보 얻기용 API 구현
+
+- 구현 해야할 API 목록 입니다.
+
+| API 이름                   | 메소드 이름    | 반환 값의 타입 |
+|----------------------------|----------------|----------------|
+| 모든 고객 정보 얻기        | getCustomers   | List<Customer> |
+| 고객 한 명의 정보 얻기     | getCustomer    | Customer       |
+| 신규 고객 정보 작성        | postCustomers  | Customer       |
+| 고객 한 명의 정보 업데이트 | putCustomer    | Customer       |
+| 고객 한 명의 정보 삭제     | deleteCustomer | void           |
+
+### CustomerRestController 구현 부분
+
+```java
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.app.domain.Customer;
+import com.example.app.service.CustomerService;
+
+// REST 웹 서비스의 엔드 포인트인 컨트롤러 클래스에는 이 어노테이션을 붙입니다.
+@RestController
+// 이 REST 웹 서비스에 접속하기 위한 경로를 @RequestMapping 어노테이션에 지정합니다.
+@RequestMapping("api/customers")
+public class CustomerRestController {
+	@Autowired // 이미 작성된 CustomerService 클래스를 주입합니다.
+	CustomerService customerService;
+	
+	// 이 메소드에 HTTP메소드 중 하나인 GET을 할당 합니다.
+	// @RequestMapping 에서 지정한 경로에 접근 하면 getCustomers()가 실행 됩니다.
+	@RequestMapping(method = RequestMethod.GET)
+	List<Customer> getCustomers() {
+		List<Customer> customers = customerService.findAll();
+		// 위 Mapping 어노테이션 붙인 메소드의 반환 값은 직렬화 되어 HTTP 응답 내용 안에 설정 됩니다.
+		// 기본으로 자바 객체는 JSON 형식으로 직렬화
+		return customers;
+	}
+	
+	// 아래 메소드 에도 GET할당 
+	// 주소값 지정을 플레이스홀더로 id값을 정해 주었기 떄문에
+	// api/customers/id 값 으로 접근이 가능함
+	@RequestMapping(value = "{id}", method = RequestMethod.GET)
+	Customer getCustomer(@PathVariable Integer id) {
+		Customer customer = customerService.findOne(id);
+		return customer;
+	}
+}
+```
+
+- curl http://localhost:8080/api/customers -v GET 명령어로 전체 데이터 얻어와보기
+- curl http://localhost:8080/api/customers/1 -v GET 로 1명의 데이터 얻어오기
+- 데이터가 Json형식으로 반환 되었음을 알 수 있습니다.
+- 아래는 나머지 API 구현
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.app.domain.Customer;
+import com.example.app.service.CustomerService;
+
+// REST 웹 서비스의 엔드 포인트인 컨트롤러 클래스에는 이 어노테이션을 붙입니다.
+@RestController
+// 이 REST 웹 서비스에 접속하기 위한 경로를 @RequestMapping 어노테이션에 지정합니다.
+@RequestMapping("api/customers")
+public class CustomerRestController {
+	@Autowired // 이미 작성된 CustomerService 클래스를 주입합니다.
+	CustomerService customerService;
+	
+	// 이 메소드에 HTTP메소드 중 하나인 GET을 할당 합니다.
+	// @RequestMapping 에서 지정한 경로에 접근 하면 getCustomers()가 실행 됩니다.
+	@RequestMapping(method = RequestMethod.GET)
+	List<Customer> getCustomers() {
+		List<Customer> customers = customerService.findAll();
+		// 위 Mapping 어노테이션 붙인 메소드의 반환 값은 직렬화 되어 HTTP 응답 내용 안에 설정 됩니다.
+		// 기본으로 자바 객체는 JSON 형식으로 직렬화
+		return customers;
+	}
+	
+	// 아래 메소드 에도 GET할당 
+	// 주소값 지정을 플레이스홀더로 id값을 정해 주었기 떄문에
+	// api/customers/id 값 으로 접근이 가능함
+	@RequestMapping(value = "{id}", method = RequestMethod.GET)
+	Customer getCustomer(@PathVariable Integer id) {
+		Customer customer = customerService.findOne(id);
+		return customer;
+	}
+	
+	// 신규 고객 정보 작성
+	// 아래 메서드에 POST 할당
+	@RequestMapping(method = RequestMethod.POST)
+	// API가 정상동작 했을떄 응답 지정
+	// CREATE동작은 201반환 그렇지 않으면 200 OK 반환
+	@ResponseStatus(HttpStatus.CREATED)
+	// HTTP요청을 Customer 객체에 매핑하기 위해 @RequestBody 어노테이현을 설정합니다.
+	Customer postCustomers(@RequestBody Customer customer) {
+		return customerService.create(customer);
+	}
+	
+	// 고객 한명 정보 업데이트
+	// 아래 어노테이션으로 Http 메소드 중 PUT 할당
+	@RequestMapping(value = "{id}", method = RequestMethod.PUT)
+	Customer putCustomer(@PathVariable Integer id, @RequestBody Customer customer) {
+		customer.setId(id);
+		return customerService.update(customer);
+	}
+	
+	// 고객 한 명의 정보 삭제
+	// DELETE Http 메소드 할당
+	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+	@ResponseStatus(HttpStatus.NO_CONTENT) // 정상동작 시 204 NO_CONTENT 반환
+	void deleteCustomer(@PathVariable Integer id) {
+		customerService.delete(id);
+	}
+}
+```
+
+- 이제 어플리케이션을 동작 해볼때 입니다.
+- cmd로 우선 실행 합니다.
+- JSON을 전송하기 위해 -d 옵션으로 요청 내용 안에 JSON 형식의 고객 정보를 설정하고, -H 옵션으로 HTTP 헤더에 'Content-Type: application/json'을 설정합니다.	
+
+> curl http://localhost:8080/api/customers -v POST -H "Content-Type: application/json" -d "{\"firstName\" : 999, \"lastName\" : \"Nobi\"}"
+
+- 위명령어를 cmd로 실행 시키면 http상태중 하나인 201 Create 를 반환합니다.
+- 다음으로 고객 한 명의 정보 업데이트 API를 실행합니다.
+- 신규 고객 정보 작성 댸와 비슷한 과정으로 실행하며, HTTP 메서드를 PUT으로 바꾸고 URL에는 업데이트할 고객의 ID를 포함하면 니다.
+
+> curl http://localhost:8080/api/customers/11 -v -X PUT -H "Content-Type: application/json" -d "{\"firstName\" : 333, \"lastName\" : \"Nobi\"}"
+
+- GET, POST 이외엔 명령값 에 -v와 -X를 꼭 같이 붙혀야 한다.
+- 일반적으로 REST웹 서비스 에서는 POST를 통해 새로 작성한 리소스에
+- 접속하기 위한 URL를 HTTP 응답의 스프링 MVC로 Location헤더에 리소스 URI를 설정하려면 소스코드를 다음과 같이 수정합니다.
+
+```java
+// Controller 클래스 POST 부분
+	@RequestMapping(method = RequestMethod.POST)
+	ResponseEntity<Customer> postCustomers(@RequestBody Customer customer,
+			// 컨텍스트 상대경로 URI를 쉽게 만들게 해주는 UriComponentsBuilder를
+			// 컨트롤러 메소드의 인자로 지정
+			UriComponentsBuilder uriBuilder) {
+		
+		Customer created = customerService.create(customer);
+		
+		// UriComponentsBuilder와 Customer 객체의 id로 리소스 URI를 만듭니다.
+		// path() 메소드에 있는 {id}플레이스홀더며. buildAndExpand() 메소드에 넘겨준 값으로 치환 됩니다.
+		URI location = uriBuilder.path("api/customers/{id}")
+				.buildAndExpand(created.getId()).toUri();
+		
+		HttpHeaders headers = new HttpHeaders();
+		// HttpHeaders객체로 HTTP응답 헤더를 만들고 location을 인자값으로 줌
+		headers.setLocation(location);
+
+		// HTTP응답 헤더를 설정하려면 메소드에서 Customer 객체가 아닌 밑의 자료형으로 반환 해야 합니다.
+		//아래 처럼 각각 customer객체, 응답헤더인 headers객체, 상태 코드인 HttpStatus를 설정 합니다.
+		return new ResponseEntity<Customer>(created, headers, HttpStatus.CREATED);
+	}
+```
+
+- 지금까지 CURD 조작 기능을 REST API향태로 구현하는 방법을 살펴 봤습니다. 여기서 배운 내용을 응용하면 REST API를 구축할 수 있을 것입니다.
+
+<hr>
+
+## Chapter.02-3 페이징 처리 구현
+
+- 모든 고객 정보 얻기 API 코드를 조금 변경하여 한 페이지당 레코드 수를 지정할 수 있게 만듭니다.
+- 아래 메소드들을 각각 수정 합니다.
+
+```java
+// CustomerRestController 클래스
+@RequestMapping(method = RequestMethod.GET)
+Page<Customer> getCustomers(@PageableDefault Pageable pageable) {
+	Page<Customer> customers = customerService.findAll(pageable);
+	return customers;
+}
+
+// CustomerService 클래스
+public Page<Customer> findAll(Pageable pageable) {
+	return customerRepository.findAllOrderByName(pageable);
+}
+
+// CustomerRepository 클래스
+@Query("SELECT x FROM Customer x ORDER BY x.firstName, x.lastName")
+Page<Customer> findAllOrderByName(Pageable pageable);
+```
+
+- GET 명령을 보내 확인 합니다.
+
+> 전체 명령<br>
+> curl -X GET http://localhost:8080/api/customers<br>
+> pageable값 넘겨주기<br>
+> curl -X GET http://localhost:8080/api/customers?page=1&size=3"
+
+<hr>
+
+
+## Chapter.02-4 Thymeleaf를 사용해 화면에 표시하는 웹 어플리케이션 개발
+
+- 지금 까지는 화면이 없고 JSON 형식으로 표시하는 어플리케이션을 개발 했습니다.
+- 여기서는 GUI로 구성합니다.
+- Thymeleaf는 HTML의 th:*** 속성(혹은 data-th-\*\*\* 속성)에 붙여 동적인 화면을 구성할 수 있는 템플릿 엔진 입니다.
+- 이전 까지는 스프링 MVC로 웹 어플리케이션을 개발할 떄 JSP를 많이 사용 했습니다.
+- 그러나 스프링 부트 에서는 Thymeleaf가 화면을 작성하기에 가장 좋습니다.
+- 아래는 시스템 처리 목록 입니다.
+
+| 처리 이름                   | HTTP 메소드 | 리소스 경로                  | 화면 이름                         |
+|-----------------------------|-------------|------------------------------|-----------------------------------|
+| 고객 정보 목록 표시 처리    | GET         | /customers                   | customers/list                    |
+| 신규 고객 정보 작성 처리    | POST        | /customers/create            | 고객 정보 목록 표시 처리로 넘어감 |
+| 고객 정보 편집 폼 표시 처리 | GET         | /customers/edit?form&id={id} | customers/edit                    |
+| 고객 정보 편집 처리         | POST        | /customers/edit&id={id}      | 고객 정보 목록 표시 처리로 넘어감 |
+| 고객 정보 삭제 처리         | POST        | /customers/delete?id={id}    | 고객 정보 목록 표시 처리로 넘어감 |
+
+- 프로젝트 시작 혹은 메이븐에 아래 의존관계를 추가 합니다.
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+```
+
+- 아래 처럼 프로젝트를 만듭니다.
+- css, html, com.example.web 하위 파일 을 제외 하고 나머지는 이전 프로젝트에서 가져옵니다.
+
+![customerService](/assets/sources/customerService.jpg "customerService")
+
+## Chapter.02-5 화면에 고객 정보 목록 표시하기
+
+- 고객 관리 어플리케이션의 화면을 변경하는 기능을 CustomerController 클래스에 구현 합니다. 패키지 이름은 REST API를 구현할 떄와는 달리 com.example.web으로 지정 합니다.
+- 다음 소스코드는 고객 정보 목록을 표시하는 소스 입니다.
+
+```java
+// CustomerController.java
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.example.domain.Customer;
+import com.example.service.CustomerService;
+
+// REST API와는 달리 화면 변경용 컨트롤러에는 이렇게 붙입니다.
+@Controller
+// URL이 /customers를 포함할 떄 list() 메소드에 매핑하도록 이렇게 붙입니다.
+@RequestMapping("customers") 
+public class CustomerController {
+	@Autowired
+	CustomerService customerService;
+	
+	// 스프링 MVC에서는 화면에 값을 넘겨주는 데 Model 객체를 사용 합니다.
+	// 인자로 Model을 받아들이고 Model.addAttribute 메소드를 사용하여 화면에 넘겨줄 속성을 설정 합니다.
+	String list(Model model) {
+		List<Customer> customers = customerService.findAllList();
+		// findAll의 결과를 model에 설정 합니다.
+		// 속성이름은 customers로 지정합니다.
+		// 사용자는 이 customers를 사용하여 접속할 수 있습니다.
+		model.addAttribute("customers", customers);
+		// 컨트롤러에서 @Controller가 붙은 요청 처리 메소드는 뷰 이름, 즉 변경될 화면 이름을 반환 합니다.
+		// 스프링 부트에서는 기본값으로 classpath:templates/+ "뷰이름" + .html이 화면 경로가 됩니다.
+		// 이 예제에서는 classpath:templates/customers/list.html을 표시합니다.
+		return "customers/list";
+	}
+}
+```
+
+- 다음으로 고객 정보 목록을 표시하기 위해 list.html을 다음과 같이 작성 합니다.
+
+```html
+<!DOCTYPE html>
+<!-- Thymeleaf의 th:*** 속성을 사용하기 위한 이름 공간을 지정합니다. -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="EUC-KR">
+<title>고객 목록</title>
+</head>
+<body>
+	<table class="table table-striped table-bordered table-condensed">
+		<!-- th:each 속성을 사용해서 List<Customer>의 내용을 한 개씩 꺼냅니다 -->
+		<!-- th:each="(루프 구간 안에서 사용하는 속성 이름) : ${(루프 대상 객체의 속성 이름)}"을 입력합니다. -->
+		<tr th:each="customer : ${customers}">
+			<!-- th:text 속성 값을 사용하여 HTML 태그 안에 포함된 문자를 치환할 수 있습니다. -->
+			<!-- 서버 쪽에서 렌더링 할때 customer.id 값으로 치환 됩니다. -->
+			<!-- 치환할 값은 기본적으로 HTML 이스케이프 크로스 사이트 스크립팅(XSS) 공격을 방지할 수 있습니다. -->
+			<td th:text="${customer.id}"> 100 </td>
+			<td th:text="${customer.lastName}"> 홍 </td>
+			<td th:text="${customer.firstName}"> 길동 </td>
+			<td>
+				<!-- form 태그의 action 속성 내용을 th:action 속성 값으로 치환할 수 있습니다. -->
+				<!-- @(***) 형식으로 지정하여 컨텍스트 경로의 상대 경로를 절대 경로로 치환할 수 있습니다. -->
+				<form th:action="@{/customers/edit}" method="get">
+					<input type = "submit" name = "form" value="편집" />
+					<!-- input 태그의 value 속성 내용을 th:value 속성 값으로 치환할 수 있습니다. -->
+					<input type = "hidden" name = "id" th:value="${customer.id}" />
+				</form>
+			</td>
+			<td>
+				<form th:action="@{/customers/delete}" method="post">
+					<input type="submit" value="삭제" />
+					<input type="hidden" name="id" th:value="${customer.id}" />
+				</form>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
+```
+
+- 브라우저로 이 HTML 파일을 직접 열어봅니다.
+- 그전에 템플릿 캐시설정을 합니다.
+- 성능저하 방지를 위해 데이터 값이 저장됩니다. 따라서 개발 중일떄는
+- 어플을 껏다 켜야 하기떄문이 이 기능을 꺼줍니다.
