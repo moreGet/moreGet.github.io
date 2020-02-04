@@ -847,5 +847,96 @@ String goToTop() {
 - 삭제도 똑같이 구현 합니다.
 
 ```java
+@RequestMapping(value = "delete", method = RequestMethod.POST)
+String edit(@RequestParam Integer id) {
+	customerService.delete(id);
+	return "redirect:/customers";
+}
+```
+
+<hr>
+
+## Chapter.02-8 스프링 시큐리티를 이용한 인증, 인가 처리 추가
+
+- 보안을 강화 하는데 사용하는 프레임 워크 입니다.
+- 아래 의존 관계를 추가 합니다.
+
+```xml
+<!-- 스프링 시큐리티 -->
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+<!-- 프로퍼티스 : ??? -->
+```
+
+- 추가할 파일
+  - com.example에 SecurityConfig.java
+  - domain에 User.java
+  - repository에 UserRepository.java
+  - Service에 LoginUserDetails.java, LoginUserDetailsServoce.java
+  - Web에 LoginController.java
+  - resources폴더 밑에 db/migration 폴더까지 생성
+    - 그후 V3__add-user.sql 생성
+  - templates에 loginForm.html 생성
+
+```java
+// User 클래스 코딩
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "users")
+// 클래스 에는 그에 대응하는 User 클래스의 필드들을 추가 합니다.
+@ToString(exclude = "customers")
+public class User {
+	@Id // userName 기본키 지정
+	private String userName;
+	// JPA와는 관계 없지만 API로 User클래스를 JSON 형식으로 출력할 경우,
+	// 암호 필드를 제외하기 위해 이 어노테이션을 붙입니다.
+	@JsonIgnore 
+	private String encodedPassword;
+	@JsonIgnore
+	// User와 Customer를 1:N관계로 만들기 위해 이어노테이션을 붙입니다.
+	// caseade는 User가 조작한 것들이 Customer에도 적용 됩니다.
+	// fetch의 LAZY는 관련된 엔티티의 로드가 지연 됩니다.
+	// User 엔티티를 가져올떄는 Customer 엔티티를 가져오지 않습니다.
+	// customers 필드에 접속한 시점에 customer 엔티티를 가져옵니다.(SELECT문 실행)
+	// 양방향 관련을 위해 mappedBy 속성에 연관 지을 속성의 이름을 지정합니다.
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	private List<Customer> customers;
+}
+```
+
+> Customer 클래스도 아래와 같이 고쳐 줍니다.
+
+```java
+// User와 Customer가 N:1 관계를 가지도록 @ManyToOne 어노테이션을 붙입니다.
+@ManyToOne(fetch = FetchType.LAZY)
+// JoinColumn 어노테이션을 사용하여 외부 키에 해당하는 칼럼 이름을 지정할 수 있습니다.
+@JoinColumn(nullable = true, name = "username")
+private User user;
+```
+
+> UserRepository class 소스 입니다.
+
+```java
 
 ```
