@@ -554,6 +554,8 @@ Page<Customer> findAllOrderByName(Pageable pageable);
 
 ![customerService](/assets/sources/customerService.jpg "customerService")
 
+<hr>
+
 ## Chapter.02-5 화면에 고객 정보 목록 표시하기
 
 - 고객 관리 어플리케이션의 화면을 변경하는 기능을 CustomerController 클래스에 구현 합니다. 패키지 이름은 REST API를 구현할 떄와는 달리 com.example.web으로 지정 합니다.
@@ -641,3 +643,209 @@ public class CustomerController {
 - 그전에 템플릿 캐시설정을 합니다.
 - 성능저하 방지를 위해 데이터 값이 저장됩니다. 따라서 개발 중일떄는
 - 어플을 껏다 켜야 하기떄문이 이 기능을 꺼줍니다.
+
+<hr>
+
+## Chapter.02-6 신규 고객 정보 작성하기
+
+- 업데이트용 폼을 표현할 CustomerForm 클래스를 만듭니다.
+- HTML의 <form> 에서 보낸 라미터를 이 클래스가 매핑하도록 합니다.
+- 입력 규칙용 어노테이션을 붙입니다.
+- Bena Validation은 자바에 표준으로 포함되어 있는 입력 검사 프레임워크 입니다.
+- Bean Validation을 사용하면 자바 Bean에 어노테이션을 붙여 입력 검사 규칙을 지정할 수 있습니다.
+
+```java
+// CustomerController class
+이전 소스 생략...
+
+@RequestMapping(value = "create", method = RequestMethod.POST)
+String create(@Validated CustomerForm form, BindingResult result, Model model) {
+	if(result.hasErrors()) {
+		return list(model);
+	}
+	
+	Customer customer = new Customer();
+	BeanUtils.copyProperties(form, customer);
+	customerService.create(customer);
+	return "redirect:/customers";
+}
+
+// CustomerForm class
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import lombok.Data;
+
+@Data
+public class CustomerForm {
+	@NotNull
+	@Size(min = 1, max = 127)
+	private String firstName;
+	
+	@NotNull
+	@Size(min = 1, max = 127)
+	private String lastName;
+}
+
+// 한글꺠짐 방지를 위한 AppConfig class
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.web.filter.CharacterEncodingFilter;
+
+@Configuration
+public class AppConfig {
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	@Bean
+	CharacterEncodingFilter characterEncodingFilter() {
+		CharacterEncodingFilter filter = new CharacterEncodingFilter();
+		filter.setEncoding("UTF-8");
+		filter.setForceEncoding(true);
+		return filter;
+	}
+}
+```
+
+> HTML 파일
+
+```html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+<meta charset="UTF-8">
+<title>고객 목록</title>
+
+<link rel="stylesheet" type="text/css" href ="../../static/css/style.css" th:href="@{/css/style.css}">
+</head>
+<body>
+	<div>
+		<form th:action="@{/customers/create}" th:object="${customerForm}" method="post">
+		<dl>
+			<dt> <label for="lastName">성</label></dt>
+			<dd>
+				<input type="text" id="lastName" name="lastName" th:field="*{lastName}" th:errorclass="error-input" value="홍" />
+				<span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="error-messages">error!</span>
+			</dd>
+			
+			<dt><label for="firstName"> 이름 </label></dt>
+			<dd>
+			    <input type="text" id="firstName" name="firstName" th:field="*{firstName}" th:errorclass="error-input" value="길동" />
+				<span th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="error-messages">error!</span>
+			</dd>
+		</dl>
+			<input type="submit" value="작성" />
+		</form>
+	</div>
+	<hr/>
+	<table>
+		<tr th:each="customer : ${customers}">
+			<td th:text="${customer.id}"> 100 </td>
+			<td th:text="${customer.lastName}"> 홍 </td>
+			<td th:text="${customer.firstName}"> 길동 </td>
+			<td>
+				<form th:action="@{/customers/edit}" method="get">
+					<input type="submit" name="form" value="편집" />
+					<input type="hidden" name="id" th:value="${customer.id}" />
+				</form>
+			</td>
+			<td>
+				<form th:action="@{/customers/delete}" method="post">
+					<input type="submit" value="삭제" />
+					<input type="hidden" name="id" th:value="${customer.id}" />
+				</form>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
+```
+
+- 만약 REST 웹 서비스에서 요청 내용을 JSON 형식으로 입력해서 검사할 경우
+- 다음과 같이 업데이트 계열의 API에 포함된 메소드의 인자중 @RequestBody가 붙은 인자에 @Validated 어노테이션을 붙이기만 하면 됩니다. BindingResult는 필요 없습니다.
+
+<hr>
+
+## Chapter.02-7 고객 정보 편집하기
+
+- 아래는 고객 정보를 편집하는 처리 입니다.
+- 아래 소스에 두가지 메소드를 추가 해줍니다.
+  
+```java
+// CustomerController 클래스
+@RequestMapping(value = "edit", params = "form", method = RequestMethod.GET)
+String editForm(@RequestParam Integer id, @Validated CustomerForm form) {
+	Customer customer = customerService.findOne(id);
+	// 고객 편집 폼이 현재 고객 정보를 표시할 수 있도록
+	// CustomerService.update() 메소드로 업데이트 합니다.
+	// 업데이트 처리가 끝나면 목록 표시 화면으로 리다이렉트 합니다.
+	BeanUtils.copyProperties(customer, form);
+	return "customers/edit";
+}
+
+@RequestMapping(value = "edit", method = RequestMethod.POST)
+String edit(@RequestParam Integer id, @Validated CustomerForm form,
+		BindingResult result) {
+	
+	if(result.hasErrors()) {
+		return editForm(id, form);
+	}
+	
+	Customer customer = new Customer();
+	BeanUtils.copyProperties(form, customer);
+	customer.setId(id);
+	customerService.update(customer);
+	return "redirect:/customer"; // 다시 화면 로딩
+}
+
+@RequestMapping(value = "edit", params = "goToTop")
+String goToTop() {
+	return "redirect:/customers";
+}
+```
+
+> 아래는 편집 폼(HTML) 입니다.
+
+```html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>고객 정보 편집</title>
+
+<link rel="Stylesheet" type="text/css" href ="../../static/css/style.css" th:href="@{/css/style.css}" />
+</head>
+<body>
+	<div>
+		<form th:action="@{/customers/edit}" th:object="${customerForm}" method="post">
+		<dl>
+			<dt> <label for="lastName" class="col-sm-2 control-label">성</label></dt>
+			<dd>
+				<input type="text" id="lastName" name="lastName" th:field="*{lastName}" class="form-control" value="홍" />
+				<span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="help-block">error!</span>
+			</dd>
+			
+			<dt><label for="firstName" class="col-sm-2 control-label"> 명 </label></dt>
+			<dd>
+			    <input type="text" id="firstName" name="firstName" th:field="*{firstName}" class="form-control" value="길동" />
+				<span th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="help-block">error!</span>
+			</dd>
+		</dl>
+			<!-- 한폼에 버튼을 여러 개 배치할 때는 name속성 값으로 컨트롤러 쪽 메소드를 구별합니다. -->
+			<!-- 예를 들어, name="goToTop"이 설정된 버튼을 누르면 goToTop() 메소드가 호출됩니다. -->
+			<input type="submit" class="btn btn-default" name="goToTop" value="돌아가기" />
+			<!-- 고객 ID를 type="hidden"이 포함된 <input> 태그로 전송합니다. -->
+			<!-- param.파라미터명 으로 요청 파라미터에 접근할 수 있습니다.(접근할 파라미터는 String[] 타입이라는 점에 주의 합니다.)-->
+			<input type="hidden" name="id" th:value="${param.id[0]}"/>
+			<input type="submit" class="btn btn-primary" value="업데이트" />
+		</form>
+	</div>
+</body>
+</html>
+```
+
+- 삭제도 똑같이 구현 합니다.
+
+```java
+
+```
