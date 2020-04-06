@@ -20,5 +20,4 @@ author: ch.Get
 
 ## SpringBoot - Scheduling
 
-Spring에서는 일정 주기마다 작업을 실행해 주는 Scheduling 기능을 지원 합니다. 아래는 그 기능을 구현한 코드 입니다.
-
+- Spring에서는 일정 주기마다 작업을 실행해 주는 Scheduling 기능을 지원 합니다.
