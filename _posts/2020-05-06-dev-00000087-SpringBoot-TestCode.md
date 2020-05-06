@@ -147,3 +147,5 @@ public class HelloControllerTest {
 그리고 아래 처럼 Test Result가 Passed 라면 성공 입니다.
 
 ![test02](../assets/sources/testCode02.png "test02")
+
+테스트 코드가 정상적으로 통과가 됬음에도 불구하고 의심이 갈 경우 실제로 소스를 실행시켜 검증을 해봅니다.
